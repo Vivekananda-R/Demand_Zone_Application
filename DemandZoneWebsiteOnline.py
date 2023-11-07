@@ -19,12 +19,17 @@ hide_st_style = """
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
-            a[rel] {display: none;}
+            .viewerBadge_container__r5tak {display: none;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 col1, col2 = st.columns([1,1])
-
+hide="""
+            <style>
+            .viewerBadge_container__r5tak {visibility: hidden;}
+            </style>
+"""
+st.markdown(hide,unsafe_allow_html=True
 def getSymbols():
     try:
         SYMBOLS=pd.read_csv('./EQUITY_L.csv')['SYMBOL'].to_list()
