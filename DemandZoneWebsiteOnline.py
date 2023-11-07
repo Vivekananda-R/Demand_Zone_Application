@@ -29,7 +29,7 @@ hide="""
             .viewerBadge_container__r5tak {visibility: hidden;}
             </style>
 """
-st.markdown(hide,unsafe_allow_html=True
+st.markdown(hide,unsafe_allow_html=True)
 def getSymbols():
     try:
         SYMBOLS=pd.read_csv('./EQUITY_L.csv')['SYMBOL'].to_list()
