@@ -345,6 +345,7 @@ def getSymbols():
     
     return SYMBOLS
 
+@st.cache_data(show_spinner=False )
 def getDataOptimized(interval='1mo',symbolsList=getSymbols()):
     print(len(symbolsList))
     intervals=['1m', '5m', '15m', '30m', '90m', '1h', '1d', '1wk', '1mo', '3mo']
@@ -386,6 +387,7 @@ def getDataOptimized(interval='1mo',symbolsList=getSymbols()):
 
     return STOCK_DATA
 
+@st.cache_data(show_spinner=False )
 def getData(interval='1mo',period='10y',symbolsList=getSymbols()):
     print('No of symbols: ',len(symbolsList))
     intervals=['1m', '5m', '15m', '30m', '90m', '1h', '1d', '1wk', '1mo', '3mo']
@@ -422,6 +424,13 @@ def constrictData(STOCK_DATA,n=1300):
     for s,d in DATA.items():
         DATA[s]=d.tail(n)
     return DATA
+
+@st.cache_resource
+def download_file(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv(index=False)
+
+
 # New Candle detection with separate percentage for leg out and legin candle
 def detectExcitingBaseCandle(data,legInPercent=0.4,legOutPercent=0.6,basePercent=0.5):
     data['Body']=data['Close']-data['Open']
@@ -751,7 +760,7 @@ with col2:
     LEGINCANDLEPERCENT=st.number_input('Enter LegIn Candle Percentage',min_value=0.0,max_value=1.0,value=0.4,step=0.05)
     BASECANDLEPERCENT=st.number_input('Enter Base Candle Percentage',min_value=0.0,max_value=1.0,value=0.5,step=0.05)
     LEGOUTCANDLEPERCENT=st.number_input('Enter LegOut Candle Percentage',min_value=0.0,max_value=1.0,value=0.6,step=0.05)
-    DOWNLOAD=st.checkbox('Download the file: ',value=False)
+    # DOWNLOAD=st.checkbox('Download the file: ',value=False)
     
 with st.sidebar:
     MARKING=st.radio('Marking Type: ',['Normal','HighLow'])
@@ -802,9 +811,21 @@ if GetZones:
         status=st.success(f'There are {len(DZONES)} demand zones')
         table=st.dataframe(DZONES,width=1000,height=500)
    
-        if DOWNLOAD:  
-            DZONES.to_csv(f"{TIMEFRAME}_Demand_Zones_{str(int((LEGINCANDLEPERCENT)*100))}{str(int((BASECANDLEPERCENT)*100))}{str(int((LEGOUTCANDLEPERCENT)*100))}_{str(datetime.today().date()).replace('-','_')}.csv",
-                        index = False)
+        
+        # csv = download_file(DZONES)
+        # col2.download_button(
+        #     label="Download data as CSV",
+        #     data=csv,
+        #     file_name=f"{TIMEFRAME}_Demand_Zones_{str(int((LEGINCANDLEPERCENT)*100))}{str(int((BASECANDLEPERCENT)*100))}{str(int((LEGOUTCANDLEPERCENT)*100))}_{str(datetime.today().date()).replace('-','_')}.csv",
+        #     mime='text/csv',
+        # )
+        col2.download_button(
+            label="Download data as CSV",
+            data=DZONES.to_csv(index=False),
+            file_name=f"{TIMEFRAME}_Demand_Zones_{str(int((LEGINCANDLEPERCENT)*100))}{str(int((BASECANDLEPERCENT)*100))}{str(int((LEGOUTCANDLEPERCENT)*100))}_{str(datetime.today().date()).replace('-','_')}.csv",
+            mime='text/csv',
+        )
+
 
 
 if Clear:
