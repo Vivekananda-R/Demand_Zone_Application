@@ -13,6 +13,15 @@ from streamlit_lightweight_charts import renderLightweightCharts
 
 st.set_page_config(layout="wide",page_title="Demand Zones Finder",initial_sidebar_state="expanded")
 st.title('Demand Zones Finder')
+
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 col1, col2 = st.columns([1,1])
 
 def getSymbols():
